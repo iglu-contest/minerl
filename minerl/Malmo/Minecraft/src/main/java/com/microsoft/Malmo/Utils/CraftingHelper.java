@@ -733,6 +733,25 @@ public class CraftingHelper {
         return items;
     }
 
+
+    /**
+     * Little utility method for dumping out a json array of all the Minecraft items,  plus as many useful
+     * attributes as we can find for them. This is primarily used by decision_tree_test.py but might be useful for
+     * real-world applications too.
+     */
+    public static JsonArray generateItemVariantJson(){
+        JsonArray items = new JsonArray();
+        for (ResourceLocation i : Item.REGISTRY.getKeys()) {
+            Item item = Item.REGISTRY.getObject(i);
+            Block block = Block.REGISTRY.getObject(i);
+            if (item != null && Item.REGISTRY.getNameForObject(item) != null) {
+                //TODO
+//                items.add(json);
+            }
+        }
+        return items;
+    }
+
     /**
      * Little utility method for generating a json array of all of the Minecraft blocks
      */
@@ -869,6 +888,7 @@ public class CraftingHelper {
         allRecipes.add("craftingRecipes", generateCraftingRecipeJson());
         allRecipes.add("smeltingRecipes", generateSmeltingRecipeJson());
         allRecipes.add("items", generateItemJson());
+        allRecipes.add("itemVariants", generateItemVariantJson());
         allRecipes.add("blocks", generateBlockJson());
         allRecipes.add("achievements", generateAchievements());
         allRecipes.add("stats", generateStats());
