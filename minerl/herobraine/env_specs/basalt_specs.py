@@ -9,7 +9,7 @@ from minerl.herobraine.hero import handlers, mc
 
 BUTTON_ACTIONS = set(simple_embodiment.SIMPLE_KEYBOARD_ACTION + ["use"])
 
-DEFAULT_ITEMS = (
+DEFAULT_ITEMS_NAMES = (
     "stone_shovel",
     "stone_pickaxe",
     "snowball",
@@ -25,11 +25,52 @@ DEFAULT_ITEMS = (
 )
 
 
+# Herobraine log Reference: https://gist.github.com/shwang/329b417d9acf25f1ff861f98724efd45
+# (old) univ.json reference: https://gist.github.com/shwang/c8a6e78bb95b0f3c7fd13b1b752b3ba5
+# Malmo schema reference: https://microsoft.github.io/malmo/0.14.0/Schemas/Types.html#type_ItemType
+MAKE_HOUSE_VILLAGE_ITEMS = [
+    dict(type="stone_shovel", quantity=1),
+    dict(type="stone_pickaxe", quantity=1),
+    dict(type="cobblestone", quantity=64),
+    dict(type="stone_stairs", quantity=64),
+    dict(type="fence", quantity=64),
+    dict(type="spruce_fence", quantity=64),
+    dict(type="acacia_fence", quantity=64),
+    dict(type="glass", quantity=64),
+    dict(type="ladder", quantity=64),
+    dict(type="torch", quantity=64),
+    dict(type="planks", quantity=64),
+    dict(type="planks", quantity=64, variant=1),
+    dict(type="planks", quantity=64, variant=2),
+    dict(type="log", quantity=64),  # oak
+    dict(type="log", quantity=64, variant=1),  # redwood
+    dict(type="log2", quantity=64),  # acacia
+    # TODO(shwang): Deal with this overlap... I should make sure that the handlers
+    # don't inappropriately clobber log and log_2.
+
+    dict(type="sandstone", quantity=64),
+    dict(type="sandstone", quantity=64, variant=2),
+    dict(type="sandstone_stairs", quantity=64),
+    dict(type="wooden_door", quantity=64),
+    dict(type="acacia_door", quantity=64),
+    dict(type="spruce_door", quantity=64),
+    dict(type="wooden_pressure_plate", quantity=64),
+    dict(type="glass", quantity=64),
+    dict(type="sand", quantity=64),
+    dict(type="dirt", quantity=64),
+    dict(type="red_flower", quantity=64),
+    dict(type="flower_pot", quantity=64),
+    dict(type="snowball", quantity=3),
+]
+
+MAKE_HOUSE_VILLAGE_ITEM_NAMES = [x["type"] for x in MAKE_HOUSE_VILLAGE_ITEMS]
+
+
 # TypeObservation claims that item list needs to begin with 'none' and end with 'other'.
-DEFAULT_EQUIP_ITEMS = ('none', 'air', ) + DEFAULT_ITEMS + ('other', )
+DEFAULT_EQUIP_ITEMS = ('none', 'air', ) + DEFAULT_ITEMS_NAMES + ('other',)
 
 obs_handler_pov = handlers.POVObservation((64, 64))
-obs_handler_inventory = handlers.FlatInventoryObservation(list(DEFAULT_ITEMS))
+obs_handler_inventory = handlers.FlatInventoryObservation(list(DEFAULT_ITEMS_NAMES))
 obs_handler_equip = handlers.EquippedItemObservation(list(DEFAULT_EQUIP_ITEMS))
 
 DEFAULT_OBS_HANDLERS = (obs_handler_pov, obs_handler_inventory, obs_handler_equip)
@@ -152,7 +193,7 @@ class BasaltBaseEnvSpec(EnvSpec):
         """
         # TODO(shwang): Waterfall demos should also check for water_bucket use.
         #               AnimalPen demos should also check for fencepost or fence gate use.
-        equip = npz_data.get("observation$equipped_items.mainhand.type")
+        equip = npz_data.get("observation$equipped_items$mainhand$type")
         use = npz_data.get("action$use")
         if equip is None:
             return f"Missing equip observation. Available keys: {list(npz_data.keys())}"
@@ -167,35 +208,29 @@ class BasaltBaseEnvSpec(EnvSpec):
         return "BasaltEnv never threw a snowball"
 
     def create_mission_handlers(self):
-        # Implements abstractmethod
         return ()
 
     def create_monitors(self):
-        # Implements abstractmethod
         return ()
 
     def create_rewardables(self):
-        # Implements abstractmethod
         return ()
 
     def determine_success_from_rewards(self, rewards: list) -> bool:
-        """Implements abstractmethod.
-
-        Basalt environment have no rewards, so this is always False."""
+        """Basalt environment have no rewards, so this is always False."""
         return False
 
     def get_docstring(self):
-        # Implements abstractmethod
         return self.__class__.__doc__
 
 
-class FindCavesEnvSpec(BasaltBaseEnvSpec):
+class FindCaveEnvSpec(BasaltBaseEnvSpec):
     """Find a Cave, and then throw a snowball to end episode."""
 
     def __init__(self):
         super().__init__(
-            name="MineRLBasaltFindCaves-v0",
-            demo_server_experiment_name="findcaves",
+            name="MineRLBasaltFindCave-v0",
+            demo_server_experiment_name="findcave",
             max_episode_steps=2400,
         )
 
@@ -237,15 +272,14 @@ class PenAnimalsEnvSpec(BasaltBaseEnvSpec):
     """
     Surround two or more animals of the same type in a fenced area (a pen).
 
-    You can't have more than one type of animal in your
-    enclosed area.
+    You can't have more than one type of animal in your enclosed area.
 
     Allowed animals are chickens, sheep, cows, and pigs.
     """
 
     def __init__(self):
         super().__init__(
-            name="MineRLBasaltPenAnimals-v0",
+            name="MineRLBasaltCreateAnimalPen-v0",
             demo_server_experiment_name="pen_animals",
             max_episode_steps=12000,
         )
@@ -263,3 +297,46 @@ class PenAnimalsEnvSpec(BasaltBaseEnvSpec):
 
     def create_server_world_generators(self) -> List[handlers.Handler]:
         return [handlers.BiomeGenerator("plains")]
+
+
+class VillageMakeHouseEnvSpec(BasaltBaseEnvSpec):
+    def __init__(self):
+        super().__init__(
+            name="MineRLBasaltBuildHouseVillage-v0",
+            demo_server_experiment_name="village_make_house",
+            max_episode_steps=36000,
+        )
+
+    def create_agent_start(self) -> List[handlers.Handler]:
+        return [handlers.SimpleInventoryAgentStart(MAKE_HOUSE_VILLAGE_ITEMS)]
+
+    def create_server_world_generators(self) -> List[handlers.Handler]:
+        return [
+            handlers.DefaultWorldGenerator(),
+        ]
+
+    def create_server_decorators(self) -> List[handlers.Handler]:
+        return [handlers.VillageSpawnDecorator()]
+
+    def create_observables(self):
+        observables = [
+            x for x in super().create_observables()
+            if not isinstance(x, (
+                handlers.FlatInventoryObservation,
+                handlers.EquippedItemObservation,
+            ))
+        ]
+        # observables.append(
+        #     handlers.FlatInventoryVariantObservation(MAKE_HOUSE_VILLAGE_ITEM_NAMES))
+        return observables
+
+    def create_actionables(self):
+        actionables = [
+            x for x in super().create_actionables()
+            if not isinstance(x, (
+                handlers.EquipAction,
+            ))
+        ]
+        # TODO(shwang): Make the variant observation, or get it from Brandon.
+        # actionables.append(handlers.EquippedItemVariantObservation)
+        return actionables
