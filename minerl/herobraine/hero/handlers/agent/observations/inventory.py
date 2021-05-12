@@ -38,6 +38,7 @@ def _univ_obs_get_inventory_slots(obs: dict) -> Optional[List[dict]]:
     cursor_item = gui_slots.get('cursor_item')
     if cursor_item is not None:
         slots.append(cursor_item)
+    return slots
 
 
 class FlatInventoryObservation(TranslationHandler):
