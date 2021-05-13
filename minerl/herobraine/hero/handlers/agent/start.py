@@ -37,8 +37,6 @@ class InventoryAgentStart(Handler):
             {% endfor %}
             </Inventory>
             """
-            #   Ideally, Malmo can take arbitrary variant numbers
-            #   variant = "{{ inventory[slot].get('variant', 0) }}"
         )
 
     def __init__(self, inventory: Dict[int, Dict[str, Union[str, int]]]):

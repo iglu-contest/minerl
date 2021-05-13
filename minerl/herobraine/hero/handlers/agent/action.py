@@ -48,8 +48,7 @@ class Action(TranslationHandler):
             adjective = " ".join([str(y) for y in x])
         else:
             adjective = str(x)
-        cmd += "{} {}".format(
-            verb, adjective)
+        cmd += f"{verb} {adjective}"
 
         return cmd
 
@@ -114,15 +113,15 @@ class ItemListAction(Action):
         Merges two ItemListCommandActions into one by unioning their items.
         Assert that the commands are the same.
         """
-
-        if not isinstance(other, self.__class__):
-            raise TypeError("other must be an instance of ItemListCommandAction")
+        cls = type(self)
+        if type(self) != type(other):
+            raise TypeError(f"Types don't match {type(self)} != {type(other)}.")
 
         if self._command != other._command:
             raise ValueError("Command must be the same for merging")
 
         new_items = list(set(self._items) | set(other._items))
-        return self.__class__(new_items, _default=self._default, _other=self._other)
+        return cls(new_items, _default=self._default, _other=self._other)
 
     def __eq__(self, other):
         """

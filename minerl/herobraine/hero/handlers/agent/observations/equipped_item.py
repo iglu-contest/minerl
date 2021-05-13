@@ -6,9 +6,8 @@
 Not very proud of the code reuse in this module -- @wguss
 """
 
+import functools
 from typing import List
-
-import jinja2
 
 from minerl.herobraine.hero.mc import EQUIPMENT_SLOTS
 from minerl.herobraine.hero import spaces
@@ -29,8 +28,7 @@ class EquippedItemObservation(TranslationHandlerGroup):
         return "equipped_items"
 
     def xml_template(self) -> str:
-        return str(
-            """<ObservationFromEquippedItem/>""")
+        return str("""<ObservationFromEquippedItem/>""")
 
     def __init__(self,
                  items: List[str],
@@ -38,7 +36,10 @@ class EquippedItemObservation(TranslationHandlerGroup):
                  offhand: bool = False,
                  armor: bool = False,
                  _default: str = 'none',
-                 _other: str = 'other'):
+                 _other: str = 'other',
+                 *,
+                 use_variants: bool = False,
+                 ):
         self.mainhand = mainhand
         self.offhand = offhand
         self.armor = armor
@@ -51,16 +52,23 @@ class EquippedItemObservation(TranslationHandlerGroup):
             self._items.append(self._default)
 
         handlers = []
+
+        make_subhandler_fn = functools.partial(
+            _EquippedItemObservation,
+            items=self._items,
+            _default=_default,
+            _other=_other,
+            use_variants=use_variants,
+        )
+
         if mainhand:
-            handlers.append(
-                _EquippedItemObservation(['mainhand'], self._items, _default=_default, _other=_other))
+            handlers.append(make_subhandler_fn(['mainhand']))
         if offhand:
-            handlers.append(
-                _EquippedItemObservation(['offhand'], self._items, _default=_default, _other=_other))
+            handlers.append(make_subhandler_fn(['offhand']))
         if armor:
-            handlers.extend([
-                _EquippedItemObservation([slot], self._items, _default=_default, _other=_other) for slot in EQUIPMENT_SLOTS if slot not in ["mainhand", "offhand"]
-            ])
+            for slot in EQUIPMENT_SLOTS:
+                if slot not in ["mainhand", "offhand"]:
+                    handlers.append(make_subhandler_fn(["slot"]))
         super().__init__(handlers)
 
     def __eq__(self, other):
@@ -92,12 +100,15 @@ class _EquippedItemObservation(TranslationHandlerGroup):
     def __init__(self,
                  dict_keys: List[str],
                  items: List[str],
-                 _default,
-                 _other):
+                 _default: str,
+                 _other: str,
+                 use_variants: bool = False,
+                 ):
         self.keys = dict_keys
 
         super().__init__(handlers=[
-            _TypeObservation(self.keys, items, _default=_default, _other=_other),
+            _TypeObservation(self.keys, items, _default=_default, _other=_other,
+                             use_variants=use_variants),
             _DamageObservation(self.keys, type_str="damage"),
             _DamageObservation(self.keys, type_str="maxDamage")
         ])
@@ -105,12 +116,13 @@ class _EquippedItemObservation(TranslationHandlerGroup):
 
 class _TypeObservation(TranslationHandler):
     """
-    Returns the item list index  of the tool in the given hand
+    Returns the item list index of the tool in the given hand
     List must start with 'none' as 0th element and end with 'other' as wildcard element
     # TODO (R): Update this dcoumentation
     """
 
-    def __init__(self, keys: List[str], items: list, _default: str, _other: str):
+    def __init__(self, keys: List[str], items: list, _default: str, _other: str,
+                 use_variants: bool):
         """
         Initializes the space of the handler with a spaces.Dict
         of all of the spaces for each individual command.
@@ -118,6 +130,7 @@ class _TypeObservation(TranslationHandler):
         self._items = sorted(items)
         self._keys = keys
         self._univ_items = ['minecraft:' + item for item in items]
+        self.use_variants = use_variants
         self._default = _default
         self._other = _other
         if _other not in self._items or _default not in self._items:
@@ -138,8 +151,16 @@ class _TypeObservation(TranslationHandler):
             head = obs_dict['equipped_items']
             for key in self._keys:
                 head = head[key]
-            item = head['type']
-            return (self._other if item not in self._items else item)
+            item_type = head['type']
+            if not self.use_variants:
+                key = item_type
+            else:
+                # TODO(shwang):
+                # Oh, maybe this is contained directly inside type, and I need to change
+                # the previous case instead?
+                item_type += head['variant']
+
+            return (self._other if key not in self._items else key)
         except KeyError:
             return self._default
 
@@ -220,7 +241,7 @@ class _DamageObservation(TranslationHandler):
                     offset -= 1
                 return np.array(obs['slots']['gui']['slots'][offset + hotbar_index][self.type_str], dtype=np.int32)
             else:
-                raise NotImplementedError('damage not implemented for hand type' + str(self._keys))
+                raise NotImplementedError(f'damage not implemented for hand type {self._keys}')
         except KeyError:
             return np.array(self._default, dtype=np.int32)
 

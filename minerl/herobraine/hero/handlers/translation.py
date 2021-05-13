@@ -27,20 +27,20 @@ class TranslationHandler(Handler):
         Converts a "hero" representation of an instance of this handler
         to a member of the space.
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def to_hero(self, x) -> str:
         """
         Takes an instance of the handler, x in self.space, and maps it to
         the "hero" representation thereof.
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def from_universal(self, x: typing.Dict[str, Any]):
         """sure
         Converts a universal representation of the handler (e.g. unviersal action/observation)
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 # TODO: ONLY WORKS FOR OBSERVATIONS.

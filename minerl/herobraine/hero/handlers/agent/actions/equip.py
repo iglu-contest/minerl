@@ -1,21 +1,13 @@
 # Copyright (c) 2020 All Rights Reserved
 # Author: William H. Guss, Brandon Houghton
 
+import abc
 from minerl.herobraine.hero.handlers.agent.action import ItemListAction
 import jinja2
 import minerl.herobraine.hero.spaces as spaces
 
 
-class EquipAction(ItemListAction):
-    """
-    An action handler for observing a list of equipped items
-    """
-
-    def to_string(self):
-        return 'equip'
-
-    def xml_template(self) -> str:
-        return str("<EquipCommands/>")
+class EquipActionABC(ItemListAction, abc.ABC):
 
     def __init__(self, items: list, _default='none', _other='other'):
         """
@@ -26,6 +18,27 @@ class EquipAction(ItemListAction):
         self._command = 'equip'
         super().__init__(self._command, self._items, _default=_default, _other=_other),
         self.previous = self._default
+
+    def to_string(self):
+        return 'equip'
+
+    def xml_template(self) -> str:
+        return str("<EquipCommands/>")
+
+    def reset(self):
+        self.previous = self._default
+
+    @abc.ABC
+    def from_universal(self, obs):
+        pass
+
+
+class EquipAction(EquipActionABC):
+    """
+    An action handler for observing a list of equipped items
+    """
+
+    # TODO assert that no items contain # in __init__
 
     def from_universal(self, obs):
         try:
@@ -41,5 +54,21 @@ class EquipAction(ItemListAction):
             return self._other
         return self._default
 
-    def reset(self):
-        self.previous = self._default
+
+class EquipVariantAction(EquipActionABC):
+
+    # TODO: Assert in __init__ that every item contains #
+
+    def from_universal(self, obs):
+        try:
+            if obs['slots']['gui']['type'] == 'class net.minecraft.inventory.ContainerPlayer':
+                hotbar_index = int(obs['hotbar'])
+                item = self._univ_items.index(obs['slots']['gui']['slots'][-10 + hotbar_index]['name'])
+                if item != self.previous:
+                    self.previous = item
+                    return obs['slots']['gui']['slots'][-10 + hotbar_index]['name'].split('minecraft:')[-1]
+        except KeyError:
+            return self._default
+        except ValueError:
+            return self._other
+        return self._default
