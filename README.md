@@ -1,3 +1,7 @@
+# IGLU patch
+
+This repo contains Minerl package with patched Malmo with custom blocks and behaviour added. 
+
 # The [MineRL](http://minerl.io) Python Package
 
 [![Build Status](https://travis-ci.com/minerllabs/minerl.svg?branch=master)](https://travis-ci.com/minerllabs/minerl)
