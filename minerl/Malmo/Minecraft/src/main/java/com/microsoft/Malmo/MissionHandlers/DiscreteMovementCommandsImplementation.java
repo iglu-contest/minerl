@@ -247,12 +247,12 @@ public class DiscreteMovementCommandsImplementation extends CommandBase implemen
                             // of spawning a free-floating item that the player must pick up.
                             java.util.List<ItemStack> items = block.getDrops(player.world, message.pos, iblockstate, 0);
                             player.world.destroyBlock( message.pos, dropBlock );
-                            for (ItemStack item : items)
-                            {
-                                if (!player.inventory.addItemStackToInventory(item)) {
-                                   Block.spawnAsEntity(player.world, message.pos, item); // Didn't fit in inventory, so spawn it.
-                                }
-                            }
+                            // for (ItemStack item : items)
+                            // {
+                            //     if (!player.inventory.addItemStackToInventory(item)) {
+                            //        Block.spawnAsEntity(player.world, message.pos, item); // Didn't fit in inventory, so spawn it.
+                            //     }
+                            // }
                             BlockEvent.BreakEvent breakevent = new BlockEvent.BreakEvent(player.world, message.pos, iblockstate, player);
                             MinecraftForge.EVENT_BUS.post(breakevent);
                         }

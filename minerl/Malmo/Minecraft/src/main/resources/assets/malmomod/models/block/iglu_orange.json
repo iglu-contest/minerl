@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "down": "malmomod:blocks/orange-border",
+        "up": "malmomod:blocks/orange-border",
+        "north": "malmomod:blocks/orange-border",
+        "east": "malmomod:blocks/orange-border",
+        "south": "malmomod:blocks/orange-border",
+        "west": "malmomod:blocks/orange-border",
+        "particle": "malmomod:blocks/blank"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "down": "malmomod:blocks/green-border",
+        "up": "malmomod:blocks/green-border",
+        "north": "malmomod:blocks/green-border",
+        "east": "malmomod:blocks/green-border",
+        "south": "malmomod:blocks/green-border",
+        "west": "malmomod:blocks/green-border",
+        "particle": "malmomod:blocks/blank"
+    }
+}

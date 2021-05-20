@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "malmomod:blocks/unbreakable-white",
+    "up": "malmomod:blocks/unbreakable-white",
+    "north": "malmomod:blocks/unbreakable-white",
+    "east": "malmomod:blocks/unbreakable-white",
+    "south": "malmomod:blocks/unbreakable-white",
+    "west": "malmomod:blocks/unbreakable-white",
+    "particle": "malmomod:blocks/blank"
+  }
+}

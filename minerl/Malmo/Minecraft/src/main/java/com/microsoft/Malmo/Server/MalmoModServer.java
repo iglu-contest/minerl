@@ -67,6 +67,8 @@ public class MalmoModServer
         MinecraftForge.EVENT_BUS.register(this);
     }
 
+    public ServerStateMachine getStateMachine() { return stateMachine; }
+
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent ev)
     {

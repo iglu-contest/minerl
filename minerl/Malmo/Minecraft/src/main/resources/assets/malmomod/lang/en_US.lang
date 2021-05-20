@@ -1,0 +1,26 @@
+portOverride.tooltip=Explicitly set the Mission Control Port - WARNING: will affect all Mods subsequently launched on this machine.
+debugOutputLevel.tooltip=Set the level of debugging information to be displayed on the Minecraft screen.
+tile.iglublock_un.name=CwC Block
+tile.iglu_red_un.name=CwC Red
+tile.iglu_orange_un.name=CwC Orange
+tile.iglu_yellow_un.name=CwC Yellow
+tile.iglu_green_un.name=CwC Green
+tile.iglu_blue_un.name=CwC Blue
+tile.iglu_purple_un.name=CwC Purple
+tile.iglu_minecraft_red_un.name=CwC Minecraft Red
+tile.iglu_minecraft_orange_un.name=CwC Minecraft Orange
+tile.iglu_minecraft_yellow_un.name=CwC Minecraft Yellow
+tile.iglu_minecraft_green_un.name=CwC Minecraft Green
+tile.iglu_minecraft_blue_un.name=CwC Minecraft Blue
+tile.iglu_minecraft_purple_un.name=CwC Minecraft Purple
+tile.iglu_unbreakable_grey_un.name=CwC Unbreakable Grey
+tile.iglu_unbreakable_white_un.name=CwC Unbreakable White
+
+death.attack.murder=...but don't worry, you completed the mission!
+key.categories.malmo=Malmo
+key.toggleMalmo=Toggle AI/human control
+key.handyTestHook=Test hook (dump recipe list)
+
+auth.usernames=List of authenticated usernames
+auth.portToUserMappings=Map ports to usernames in format <port>:<username>
+auth.usernameToPasswordMappings=Map usernames to passwords in format <username>:<password>

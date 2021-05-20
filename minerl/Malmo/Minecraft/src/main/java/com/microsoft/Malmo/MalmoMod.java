@@ -69,6 +69,13 @@ import com.microsoft.Malmo.Utils.SeedHelper;
 import com.microsoft.Malmo.Utils.TCPUtils;
 import com.microsoft.Malmo.Client.MalmoEnvServer;
 
+import com.microsoft.Malmo.Blocks.IgluBlock;
+import com.microsoft.Malmo.Blocks.DropHandler;
+import com.microsoft.Malmo.Blocks.IgluUnbreakableBlock;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraftforge.common.MinecraftForge;
 
 @Mod(modid = MalmoMod.MODID, guiFactory = "com.microsoft.Malmo.MalmoModGuiOptions")
 public class MalmoMod
@@ -84,6 +91,9 @@ public class MalmoMod
     public static final String AGENT_DEAD_QUIT_CODE = "MALMO_AGENT_DIED";
     public static final String AGENT_UNRESPONSIVE_CODE = "MALMO_AGENT_NOT_RESPONDING";
     public static final String VIDEO_UNRESPONSIVE_CODE = "MALMO_VIDEO_NOT_RESPONDING";
+
+    private static String[] breakableColors = {"red", "orange", "yellow", "green", "blue", "purple"};
+	private static String[] unbreakableColors = {"grey", "white"};
 
     protected static Hashtable<String, Object> clientProperties = new Hashtable<String, Object>();
     protected static Hashtable<String, Object> serverProperties = new Hashtable<String, Object>();
@@ -147,6 +157,32 @@ public class MalmoMod
         network.registerMessage(ObservationFromFullInventoryImplementation.InventoryRequestMessageHandler.class, ObservationFromFullInventoryImplementation.InventoryRequestMessage.class, 10, Side.SERVER);
         network.registerMessage(InventoryCommandsImplementation.InventoryChangeMessageHandler.class, InventoryCommandsImplementation.InventoryChangeMessage.class, 11, Side.CLIENT);
         network.registerMessage(ObservationFromSystemImplementation.SystemRequestMessageHandler.class, ObservationFromSystemImplementation.SystemRequestMessage.class, 12, Side.SERVER);
+
+        for (String color : breakableColors) {
+			IgluBlock block = (IgluBlock)(new IgluBlock().setUnlocalizedName("iglu_" + color + "_un"));
+			block.setRegistryName("iglu_" + color + "_rn");
+			GameRegistry.register(block);
+
+			Block mcblock = new Block(Material.CAKE).setUnlocalizedName("iglu_minecraft_" + color + "_un");
+			mcblock.setRegistryName("iglu_minecraft_" + color + "_rn");
+			GameRegistry.register(mcblock);
+
+			ItemBlock item = new ItemBlock(block);
+			item.setRegistryName(block.getRegistryName());
+			GameRegistry.register(item);
+
+			ItemBlock mcitem = new ItemBlock(mcblock);
+			mcitem.setRegistryName(mcblock.getRegistryName());
+			GameRegistry.register(mcitem);
+		}
+
+        for (String color : unbreakableColors) {
+			IgluUnbreakableBlock block = (IgluUnbreakableBlock)(new IgluUnbreakableBlock().setUnlocalizedName("iglu_unbreakable_" + color + "_un"));
+			block.setRegistryName("iglu_unbreakable_"+color+"_rn");
+			GameRegistry.register(block);
+		}
+
+
     }
 
     @EventHandler
@@ -190,6 +226,7 @@ public class MalmoMod
             this.server = new MalmoModServer();
             this.server.init(event);
         }
+        MinecraftForge.EVENT_BUS.register(new DropHandler());
     }
 
     public void initIntegratedServer(MissionInit minit)
@@ -488,4 +525,7 @@ public class MalmoMod
             }
         }
     }
+    
+    public MalmoModClient getClient() { return client; }
+    public MalmoModServer getServer() { return server; }
 }

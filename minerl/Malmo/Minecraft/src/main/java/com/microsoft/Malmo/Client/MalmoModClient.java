@@ -206,6 +206,8 @@ public class MalmoModClient
         this.keyManager = new KeyManager(settings, extraKeys);
     }
 
+    public ClientStateMachine getStateMachine() { return stateMachine; }
+
     /**
      * Event listener that prevents agents from opening gui windows by canceling the 'USE' action of a block
      * deny (most) blocks that open a gui when {@link net.minecraft.block.Block#onBlockActivated} is called
