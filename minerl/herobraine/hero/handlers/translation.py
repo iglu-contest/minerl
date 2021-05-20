@@ -12,6 +12,9 @@ import typing
 from minerl.herobraine.hero.handler import Handler
 
 
+logger = logging.getLogger(__name__)
+
+
 class TranslationHandler(Handler):
     """
     An agent handler to be added to the mission XML.
@@ -63,7 +66,6 @@ class KeymapTranslationHandler(TranslationHandler):
         self.univ_keys = univ_keys
         self.default_if_missing = default_if_missing
         # TODO (R): UNIFY THE LOGGING FRAMEWORK FOR MINERL
-        self.logger = logging.getLogger(f'{__name__}.{self.to_string()}')
 
     def walk_dict(self, d, keys):
         for key in keys:
@@ -71,7 +73,7 @@ class KeymapTranslationHandler(TranslationHandler):
                 d = d[key]
             else:
                 if self.default_if_missing is not None:
-                    self.logger.error(f"No {keys[-1]} observation! Yielding default value "
+                    logger.error(f"No {keys[-1]} observation! Yielding default value "
                                       f"{self.default_if_missing} for {'/'.join(keys)}")
                     return np.array(self.default_if_missing)
                 else:
@@ -115,8 +117,8 @@ class TranslationHandlerGroup(TranslationHandler):
             [self.handler_dict[s].to_hero(x[s]) for s in self.handler_dict])
 
     def from_hero(self, x: typing.Dict[str, Any]) -> typing.Dict[str, Any]:
-        """Applies the constituent from_hero methods on the object X 
-           and builds a dictionary with keys corresponding to the constituent 
+        """Applies the constituent from_hero methods on the object X
+           and builds a dictionary with keys corresponding to the constituent
            handlers applied."""
 
         return {
