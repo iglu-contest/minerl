@@ -37,7 +37,7 @@
 
 
     {% for agent_index in range(agent_count) %}
-    <AgentSection mode="Survival">
+    <AgentSection mode="{{ agent_mode }}">
         <Name>MineRLAgent{{ agent_index }}</Name>
 
         <AgentStart>

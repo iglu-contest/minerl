@@ -57,6 +57,8 @@ class EnvSpec(abc.ABC):
         for self.current_agent in range(self.agent_count):
             self.agent_start.append(self.create_agent_start())
 
+        self.agent_mode = self.create_agent_mode()
+
         # check that the observables (list) have no duplicate to_strings
         assert len([o.to_string() for o in self.observables]) == len(set([o.to_string() for o in self.observables]))
         assert len([a.to_string() for a in self.actionables]) == len(set([a.to_string() for a in self.actionables]))
@@ -102,6 +104,9 @@ class EnvSpec(abc.ABC):
         as these handlers are reinstantiated on every reset!
         """
         raise NotImplementedError('subclasses must override create_agent_start()!')
+
+    def create_agent_mode(self) -> str:
+        return "Survival"
 
     @abstractmethod
     def create_agent_handlers(self) -> List[Handler]:

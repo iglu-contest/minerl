@@ -70,7 +70,8 @@ import com.microsoft.Malmo.Utils.TCPUtils;
 import com.microsoft.Malmo.Client.MalmoEnvServer;
 
 import com.microsoft.Malmo.Blocks.IgluBlock;
-import com.microsoft.Malmo.Blocks.DropHandler;
+import com.microsoft.Malmo.Blocks.BlocksHandler;
+import com.microsoft.Malmo.Blocks.PlacementHandler;
 import com.microsoft.Malmo.Blocks.IgluUnbreakableBlock;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.block.Block;
@@ -92,8 +93,8 @@ public class MalmoMod
     public static final String AGENT_UNRESPONSIVE_CODE = "MALMO_AGENT_NOT_RESPONDING";
     public static final String VIDEO_UNRESPONSIVE_CODE = "MALMO_VIDEO_NOT_RESPONDING";
 
-    private static String[] breakableColors = {"red", "orange", "yellow", "green", "blue", "purple"};
-	private static String[] unbreakableColors = {"grey", "white"};
+    private static final String[] breakableColors = {"red", "orange", "yellow", "green", "blue", "purple"};
+	private static final String[] unbreakableColors = {"grey", "white"};
 
     protected static Hashtable<String, Object> clientProperties = new Hashtable<String, Object>();
     protected static Hashtable<String, Object> serverProperties = new Hashtable<String, Object>();
@@ -182,6 +183,8 @@ public class MalmoMod
 			GameRegistry.register(block);
 		}
 
+        MinecraftForge.EVENT_BUS.register(new BlocksHandler());
+        MinecraftForge.EVENT_BUS.register(new PlacementHandler());
 
     }
 
@@ -226,7 +229,6 @@ public class MalmoMod
             this.server = new MalmoModServer();
             this.server.init(event);
         }
-        MinecraftForge.EVENT_BUS.register(new DropHandler());
     }
 
     public void initIntegratedServer(MissionInit minit)
