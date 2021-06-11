@@ -2141,6 +2141,15 @@
         <xs:complexType/>
     </xs:element>
 
+    <xs:element name="FakeResetCommand">
+        <xs:annotation>
+            <xs:documentation>
+                Once executed, this command will teleport the agent to the starting position; and drop the inventory and build zone;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType/>
+    </xs:element>
+
     <xs:element name="CameraCommands">
         <xs:annotation>
             <xs:documentation>
