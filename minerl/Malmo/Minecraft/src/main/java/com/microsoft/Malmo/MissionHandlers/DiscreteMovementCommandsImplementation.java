@@ -298,6 +298,11 @@ public class DiscreteMovementCommandsImplementation extends CommandBase implemen
         EntityPlayerSP player = Minecraft.getMinecraft().player;
         if (player != null)
         {
+//            if (!player.capabilities.allowFlying) {
+//                player.capabilities.allowFlying = true;
+//                player.sendPlayerAbilities();
+//                player.onUpdate();
+//            }
             int z = 0;
             int x = 0;
             int y = 0;
@@ -456,7 +461,20 @@ public class DiscreteMovementCommandsImplementation extends CommandBase implemen
                 // Attempt to move the entity:
                 double oldX = player.posX;
                 double oldZ = player.posZ;
-                player.move(MoverType.SELF, (double)x, (double)y, (double)z);
+                double oldY = player.posY;
+                double dx = (double)x;
+                double dz = (double)z;
+                double dy = (double)y;
+                if (!(oldX + dx <= 5.5 && oldX + dx >= -5.5)) {
+                    dx = 0;
+                }
+                if (!(oldZ + dz <= 5.5 && oldZ + dz >= -5.5)) {
+                    dz = 0;
+                }
+                if (!(oldY + dy >= 0 && oldY + dy <= 9)) {
+                    dy = 0;
+                }
+                player.move(MoverType.SELF, dx, dy, dz);
                 player.onUpdate();
                 if (this.params.isAutoFall())
                 {
