@@ -13,6 +13,7 @@ from minerl.env.malmo import InstanceManager, MinecraftInstance, launch_queue_lo
 import uuid
 import coloredlogs
 import gym
+import re
 import socket
 import time
 from lxml import etree
@@ -280,6 +281,8 @@ class _MultiAgentEnv(gym.Env):
 
                     if not self.has_finished[actor_name]:
                         malmo_command = self._process_action(actor_name, actions[actor_name])
+                        malmo_command = malmo_command.strip()
+                        malmo_command = re.sub('\n+', '\n', malmo_command)
                         step_message = "<StepClient" + str(STEP_OPTIONS) + ">" + \
                                        malmo_command + \
                                        "</StepClient" + str(STEP_OPTIONS) + " >"
