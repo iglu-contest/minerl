@@ -6,9 +6,9 @@ import sys
 import tqdm
 import numpy as np
 import logging
-import minerl.herobraine.hero.spaces as spaces
+import minerl_patched.herobraine.hero.spaces as spaces
 
-import minerl
+import minerl_patched
 
 logging.getLogger().setLevel(logging.DEBUG)
 logging.basicConfig()
@@ -72,7 +72,7 @@ def _test_data(environment='MineRLObtainDiamond-v0'):
 
 
 def run_once(environment, verbose=True):
-    d = minerl.data.make(environment, num_workers=1)
+    d = minerl_patched.data.make(environment, num_workers=1)
     if verbose:
         logging.info('Testing {}'.format(environment))
 

@@ -29,7 +29,7 @@ pip3 install --upgrade minerl
 
 Running an environment:
 ```python
-import minerl
+import minerl_patched
 import gym
 env = gym.make('MineRLNavigateDense-v0')
 
@@ -52,12 +52,12 @@ while not done:
 Sampling the dataset:
 
 ```python
-import minerl
+import minerl_patched
 
 # YOU ONLY NEED TO DO THIS ONCE!
-minerl.data.download('/your/local/path')
+minerl_patched.data.download('/your/local/path')
 
-data = minerl.data.make(
+data = minerl_patched.data.make(
     'MineRLObtainDiamond-v0',
     data_dir='/your/local/path')
 
@@ -90,7 +90,7 @@ Visualizing the dataset:
 export MINERL_DATA_ROOT='/your/local/path'
 
 # Visualizes a random trajectory of MineRLObtainDiamondDense-v0
-python3 -m minerl.viewer MineRLObtainDiamondDense-v0
+python3 -m minerl_patched.viewer MineRLObtainDiamondDense-v0
 
 ```
 

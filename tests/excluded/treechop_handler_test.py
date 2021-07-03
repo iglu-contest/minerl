@@ -6,17 +6,17 @@ import logging
 
 import gym
 import matplotlib.pyplot as plt
-import minerl
+import minerl_patched
 import numpy as np
-from minerl.env.core import MineRLEnv
+from minerl_patched.env.core import MineRLEnv
 
 import coloredlogs
 
 coloredlogs.install(logging.DEBUG)
 
 
-# import minerl.env.bootstrap
-# minerl.env.bootstrap._check_port_avail = lambda _,__: True
+# import minerl_patched.env.bootstrap
+# minerl_patched.env.bootstrap._check_port_avail = lambda _,__: True
 
 def gen_obtain_debug_actions(env):
     actions = []

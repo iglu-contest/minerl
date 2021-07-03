@@ -1,4 +1,4 @@
-import minerl
+import minerl_patched
 import IPython
 import gym
 import coloredlogs

@@ -6,10 +6,10 @@ import logging
 
 import gym
 import matplotlib.pyplot as plt
-import minerl
+import minerl_patched
 import numpy as np
-from minerl.env.core import MineRLEnv
-from minerl.env.malmo import InstanceManager
+from minerl_patched.env.core import MineRLEnv
+from minerl_patched.env.malmo import InstanceManager
 
 import coloredlogs
 

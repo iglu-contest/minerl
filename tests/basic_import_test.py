@@ -2,7 +2,7 @@
 import os
 
 import gym
-import minerl
+import minerl_patched
 
 
 def main():
@@ -24,7 +24,7 @@ def main():
 
 
 def test_import():
-    print(minerl.data.version)
+    print(minerl_patched.data.version)
     assert main() is True
 
 

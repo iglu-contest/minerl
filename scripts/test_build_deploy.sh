@@ -20,7 +20,7 @@ pip install -e .
 #az storage copy -s $AZ_MINERL_DATA -d $MINERL_DATA_ROOT --recursive --subscription sci
 
 pytest . -n 2
-pip uninstall -y minerl
+pip uninstall -y minerl_patched
 
 pip list
 
@@ -36,7 +36,7 @@ pip list
 
 cur_dir=$(pwd)
 cd ..
-python -c "import minerl; import gym, logging; logging.basicConfig(level=logging.DEBUG); env=gym.make('minerl:MineRLTreechop-v0', is_fault_tolerant=False); env.reset(); env.close()"
+python -c "import minerl_patched; import gym, logging; logging.basicConfig(level=logging.DEBUG); env=gym.make('minerl_patched:MineRLTreechop-v0', is_fault_tolerant=False); env.reset(); env.close()"
 cd $cur_dir
 # Finally, if this is not a cron build, we deploy the wheel
 if [ "$BUILDKITE_SOURCE" != "schedule" ]; then

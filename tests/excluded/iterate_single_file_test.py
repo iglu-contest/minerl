@@ -1,11 +1,11 @@
-import minerl
+import minerl_patched
 import matplotlib.pyplot as plt
 import tqdm
 import coloredlogs
 import logging
 
 coloredlogs.install(level=logging.DEBUG)
-data = minerl.data.make('MineRLTreechop-v0', num_workers=1)
+data = minerl_patched.data.make('MineRLTreechop-v0', num_workers=1)
 
 diter = data.sarsd_iter(num_epochs=1, max_sequence_len=1,
                         include_metadata=True, seed=1)

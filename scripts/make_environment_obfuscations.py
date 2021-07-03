@@ -2,8 +2,8 @@ import torch as th
 import numpy as np
 import dill
 from tabulate import tabulate
-from minerl.herobraine.hero.spaces import MineRLSpace
-from minerl.herobraine.envs import MINERL_OBTAIN_DIAMOND_OBF_V0
+from minerl_patched.herobraine.hero.spaces import MineRLSpace
+from minerl_patched.herobraine.envs import MINERL_OBTAIN_DIAMOND_OBF_V0
 import gym
 import json
 from json import JSONEncoder
@@ -13,7 +13,7 @@ import logging
 import sys
 import functools
 
-import minerl
+import minerl_patched
 
 
 class SubsetSoftmax(th.nn.Module):
@@ -376,7 +376,7 @@ import tqdm
 
 def aux_data_iterator(original_env, vector_env, types='action'):
     g = (lambda x: x.common_action_space) if types == 'action' else (lambda x: x.common_observation_space)
-    dat = minerl.data.make(original_env.name)
+    dat = minerl_patched.data.make(original_env.name)
     for sarsd in (dat.batch_iter(16, 2, -1, 32)):
         if types == 'action':
             yield g(vector_env).flat_map(sarsd[1]).reshape(32, -1)

@@ -22,9 +22,9 @@ with open("README.md", "r") as fh:
 with open("requirements.txt", "r") as fh:
     requirements = fh.read()
 
-MALMO_BRANCH = "minerl"
+MALMO_BRANCH = "minerl_patched"
 MALMO_VERSION = "0.37.0"
-MALMO_DIR = os.path.join(os.path.dirname(__file__), 'minerl', 'Malmo')
+MALMO_DIR = os.path.join(os.path.dirname(__file__), 'minerl_patched', 'Malmo')
 BINARIES_IGNORE = shutil.ignore_patterns(
     'build',
     'bin',
@@ -87,7 +87,7 @@ class InstallWithMinecraftLib(install_lib):
         super().build()
         # Install Minecraft to the build directory. Let's first print it.
         build_minecraft(MALMO_DIR, os.path.join(
-            self.build_dir, 'minerl', 'Malmo'
+            self.build_dir, 'minerl_patched', 'Malmo'
         ))
         # TODO (R): Build the parser [not necessary at the moment]
 
@@ -96,7 +96,7 @@ class CustomBuild(build):
     def run(self):
         super().run()
         build_minecraft(MALMO_DIR, os.path.join(
-            self.build_lib, 'minerl', 'Malmo'
+            self.build_lib, 'minerl_patched', 'Malmo'
         ))
 
 
@@ -153,12 +153,12 @@ def build_minecraft(source_dir, build_dir):
 
 
 setuptools.setup(
-    name='minerl',
+    name='minerl_patched',
     version=os.environ.get('MINERL_BUILD_VERSION', '0.4.0'),
     description='MineRL environment and data loader for reinforcement learning from human demonstration in Minecraft',
     long_description=markdown,
     long_description_content_type="text/markdown",
-    url='http://github.com/minerllabs/minerl',
+    url='https://github.com/iglu-contest/minerl',
     author='MineRL Labs',
     author_email='minerl@andrew.cmu.edu',
     license='MIT',

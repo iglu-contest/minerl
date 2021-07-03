@@ -3,10 +3,10 @@ import numpy as np
 import gym
 import logging
 
-import minerl
+import minerl_patched
 
-from minerl.env import missions_dir
-from minerl.env.core import MineRLEnv
+from minerl_patched.env import missions_dir
+from minerl_patched.env.core import MineRLEnv
 
 import coloredlogs
 

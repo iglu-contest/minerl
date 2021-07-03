@@ -1,6 +1,6 @@
 import time
 
-import minerl
+import minerl_patched
 import itertools
 import gym
 import sys
@@ -15,7 +15,7 @@ NUM_EPISODES = 4
 
 
 def step_data(environment='MineRLObtainDiamond-v0'):
-    d = minerl.data.make(environment)
+    d = minerl_patched.data.make(environment)
 
     # Iterate through batches of data
     counter = 0

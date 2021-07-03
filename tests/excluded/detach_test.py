@@ -9,7 +9,7 @@ import time
 
 import psutil
 
-import minerl
+import minerl_patched
 from daemoniker import daemonize
 
 

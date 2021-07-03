@@ -1,4 +1,4 @@
-import minerl
+import minerl_patched
 import os
 import coloredlogs
 import logging
@@ -7,7 +7,7 @@ import tqdm
 
 
 def _test_batch_iter():
-    dat = minerl.data.make('MineRLTreechopVectorObf-v0')
+    dat = minerl_patched.data.make('MineRLTreechopVectorObf-v0')
 
     act_vectors = []
     i = 0

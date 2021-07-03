@@ -46,7 +46,7 @@ tests_data/
 scripts/results
 .DS_STORE
 tests_data/
-minerl/data/pipeline/tests_data/
+minerl_patched/data/pipeline/tests_data/
 *__pycache__/
 blacklist.txt
 parse
@@ -231,7 +231,7 @@ cython_debug/
 scripts/results
 .DS_STORE
 tests_data/
-minerl_data/pipeline/tests_data/
+minerl_patched_data/pipeline/tests_data/
 
 
 t/
@@ -284,8 +284,8 @@ tests/logs/
 jenkins_home/
 
 #eclipse
-minerl/Malmo/Minecraft/*.launch
-*minerl_watchers/
+minerl_patched/Malmo/Minecraft/*.launch
+*minerl_patched_watchers/
 caches/
 native/
 wrapper/

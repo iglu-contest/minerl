@@ -1,16 +1,16 @@
-from minerl.env.malmo import InstanceManager
-import minerl
+from minerl_patched.env.malmo import InstanceManager
+import minerl_patched
 import time
 import gym
 import numpy as np
 import logging
 import coloredlogs
-from minerl.herobraine.wrappers.vector_wrapper import Vectorized
-from minerl.herobraine.env_specs.obtain_specs import ObtainDiamondDebug
-from minerl.herobraine.hero.test_spaces import assert_equal_recursive
-from minerl.herobraine.wrappers.obfuscation_wrapper import Obfuscated
-import minerl.herobraine.envs as envs
-import minerl.herobraine
+from minerl_patched.herobraine.wrappers.vector_wrapper import Vectorized
+from minerl_patched.herobraine.env_specs.obtain_specs import ObtainDiamondDebug
+from minerl_patched.herobraine.hero.test_spaces import assert_equal_recursive
+from minerl_patched.herobraine.wrappers.obfuscation_wrapper import Obfuscated
+import minerl_patched.herobraine.envs as envs
+import minerl_patched.herobraine
 
 coloredlogs.install(level=logging.DEBUG)
 reward_dict = {

@@ -29,7 +29,7 @@ install:
   - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
   - pip install -e .
   - pip install pytest-xdist
-  - python -c "import logging; import minerl; logging.basicConfig(level=logging.DEBUG); minerl.data.download(minimal=True)"
+  - python -c "import logging; import minerl_patched; logging.basicConfig(level=logging.DEBUG); minerl_patched.data.download(minimal=True)"
 services: xvfb
 script:
   - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
@@ -40,7 +40,7 @@ branches:
     - master
 deploy:
   provider: pypi
-  user: minerl-test
+  user: minerl_patched-test
   server: https://testpypi.python.org/pypi
   on:
     tags: true

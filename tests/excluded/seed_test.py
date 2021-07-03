@@ -4,15 +4,15 @@ import time
 import logging
 
 import gym
-import minerl
+import minerl_patched
 import numpy as np
 
 import coloredlogs
 
 coloredlogs.install(logging.DEBUG)
 
-# import minerl.env.bootstrap
-# minerl.env.bootstrap._check_port_avail = lambda _,__: True
+# import minerl_patched.env.bootstrap
+# minerl_patched.env.bootstrap._check_port_avail = lambda _,__: True
 
 NUM_EPISODES = 10
 

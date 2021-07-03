@@ -1,6 +1,6 @@
 import time
 
-import minerl
+import minerl_patched
 import itertools
 import gym
 import sys
@@ -9,7 +9,7 @@ import numpy as np
 
 
 def time_data(environment='MineRLObtainDiamond-v0'):
-    d = minerl.data.make(environment, num_workers=8)
+    d = minerl_patched.data.make(environment, num_workers=8)
 
     # Iterate through batches of data
     counter = tqdm.tqdm()

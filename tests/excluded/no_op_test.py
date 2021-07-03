@@ -1,4 +1,4 @@
-import minerl, gym
+import minerl_patched, gym
 
 env = gym.make("MineRLObtainDiamondVectorObf-v0")
 while True:

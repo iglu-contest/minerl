@@ -5,7 +5,7 @@ import time
 import logging
 
 import gym
-import minerl
+import minerl_patched
 import numpy as np
 
 import coloredlogs

@@ -1,6 +1,6 @@
 import gym
 import itertools
-import minerl
+import minerl_patched
 import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.layers as layers

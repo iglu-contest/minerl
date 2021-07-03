@@ -6,9 +6,9 @@ import logging
 
 import gym
 import matplotlib.pyplot as plt
-import minerl
+import minerl_patched
 import numpy as np
-from minerl.env.core import MineRLEnv
+from minerl_patched.env.core import MineRLEnv
 
 import coloredlogs
 
@@ -22,8 +22,8 @@ def main():
     """
     Tests running a simple environment.
     """
-    old_wait, old_timeout = minerl.env.core.MAX_WAIT, minerl.env.core.SOCKTIME
-    minerl.env.core.MAX_WAIT, minerl.env.core.SOCKTIME = 1, 5.0
+    old_wait, old_timeout = minerl_patched.env.core.MAX_WAIT, minerl_patched.env.core.SOCKTIME
+    minerl_patched.env.core.MAX_WAIT, minerl_patched.env.core.SOCKTIME = 1, 5.0
 
     env = gym.make('MineRLNavigateDense-v0')
 
@@ -36,7 +36,7 @@ def main():
             obs, reward, done, info = env.step(
                 random_act)
 
-    minerl.env.core.MAX_WAIT, minerl.env.core.SOCKTIME = old_wait, old_timeout
+    minerl_patched.env.core.MAX_WAIT, minerl_patched.env.core.SOCKTIME = old_wait, old_timeout
 
 
 if __name__ == "__main__":

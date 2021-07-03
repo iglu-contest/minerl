@@ -1,7 +1,7 @@
-from minerl.env.malmo import InstanceManager
-from minerl.herobraine.env_specs.treechop_specs import Treechop
+from minerl_patched.env.malmo import InstanceManager
+from minerl_patched.herobraine.env_specs.treechop_specs import Treechop
 import gym
-import minerl  # noqa
+import minerl_patched  # noqa
 import argparse
 import time
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-DIR="$DIR/../minerl/Malmo/Minecraft"
+DIR="$DIR/../minerl_patched/Malmo/Minecraft"
 
 cd $DIR
 

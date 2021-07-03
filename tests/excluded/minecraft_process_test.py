@@ -1,7 +1,7 @@
 # Installation test
-import minerl
+import minerl_patched
 import time
-from minerl.env.bootstrap import MinecraftInstance
+from minerl_patched.env.bootstrap import MinecraftInstance
 
 
 def main():

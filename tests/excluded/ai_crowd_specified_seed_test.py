@@ -50,7 +50,7 @@ def main():
 
     import gym
     os.environ['MINERL_INSTANCE_MANAGER_REMOTE'] = '1'
-    import minerl
+    import minerl_patched
 
     def run_env():
         try:
