@@ -154,7 +154,7 @@ def build_minecraft(source_dir, build_dir):
 
 setuptools.setup(
     name='minerl_patched',
-    version=os.environ.get('MINERL_BUILD_VERSION', '0.4.0'),
+    version=os.environ.get('MINERL_BUILD_VERSION', '0.1.0'),
     description='MineRL environment and data loader for reinforcement learning from human demonstration in Minecraft',
     long_description=markdown,
     long_description_content_type="text/markdown",
@@ -179,6 +179,6 @@ setuptools.setup(
 )
 
 # global-exclude .git/*
-# global-exclude  build/ bin/ dists/ caches/  native/ doc/ *.lock 
+# global-exclude  build/ bin/ dists/ caches/  native/ doc/ *.lock
 # global-exclude  *.gradle/* *.minecraft/ *.minecraftserver/
 # global-exclude  *.fuse_hidden*
