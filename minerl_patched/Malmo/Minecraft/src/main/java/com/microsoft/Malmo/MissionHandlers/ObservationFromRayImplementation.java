@@ -115,52 +115,53 @@ public class ObservationFromRayImplementation extends HandlerBase implements IOb
             jsonMop.addProperty("z", mop.hitVec.zCoord);
             IBlockState state = Minecraft.getMinecraft().world.getBlockState(mop.getBlockPos());
             List<IProperty> extraProperties = new ArrayList<IProperty>();
-            DrawBlock db = MinecraftTypeHelper.getDrawBlockFromBlockState(state, extraProperties);
-            jsonMop.addProperty("type", db.getType().value());
-            if (db.getColour() != null)
-                jsonMop.addProperty("colour", db.getColour().value());
-            if (db.getVariant() != null)
-                jsonMop.addProperty("variant", db.getVariant().getValue());
-            if (db.getFace() != null)
-                jsonMop.addProperty("facing",  db.getFace().value());
-            if (extraProperties.size() > 0)
-            {
-                // Add the extra properties that aren't covered by colour/variant/facing.
-                for (IProperty prop : extraProperties)
-                {
-                    String key = "prop_" + prop.getName();
-                    if (prop.getValueClass() == Boolean.class)
-                        jsonMop.addProperty(key, Boolean.valueOf(state.getValue(prop).toString()));
-                    else if (prop.getValueClass() == Integer.class)
-                        jsonMop.addProperty(key, Integer.valueOf(state.getValue(prop).toString()));
-                    else
-                        jsonMop.addProperty(key, state.getValue(prop).toString());
-                }
-            }
-            // Add the NBTTagCompound, if this is a tile entity.
-            if (includeNBTData)
-            {
-                TileEntity tileentity = Minecraft.getMinecraft().world.getTileEntity(mop.getBlockPos());
-                if (tileentity != null)
-                {
-                    NBTTagCompound data = tileentity.getUpdateTag();
-                    if (data != null)
-                    {
-                        // Turn data directly into json and add it to what we're already returning.
-                        String jsonString = data.toString();
-                        try
-                        {
-                            JsonElement jelement = new JsonParser().parse(jsonString);
-                            if (jelement != null)
-                                jsonMop.add("NBTTagCompound", jelement);
-                        }
-                        catch (JsonSyntaxException e)
-                        {
-                            // Duff NBTTagCompound - ignore it.
-                        }
-                    }
-                }
-            }
+            // commented for now as iglu breaks when custom block is encountered
+//            DrawBlock db = MinecraftTypeHelper.getDrawBlockFromBlockState(state, extraProperties);
+//            jsonMop.addProperty("type", db.getType().value());
+//            if (db.getColour() != null)
+//                jsonMop.addProperty("colour", db.getColour().value());
+//            if (db.getVariant() != null)
+//                jsonMop.addProperty("variant", db.getVariant().getValue());
+//            if (db.getFace() != null)
+//                jsonMop.addProperty("facing",  db.getFace().value());
+//            if (extraProperties.size() > 0)
+//            {
+//                // Add the extra properties that aren't covered by colour/variant/facing.
+//                for (IProperty prop : extraProperties)
+//                {
+//                    String key = "prop_" + prop.getName();
+//                    if (prop.getValueClass() == Boolean.class)
+//                        jsonMop.addProperty(key, Boolean.valueOf(state.getValue(prop).toString()));
+//                    else if (prop.getValueClass() == Integer.class)
+//                        jsonMop.addProperty(key, Integer.valueOf(state.getValue(prop).toString()));
+//                    else
+//                        jsonMop.addProperty(key, state.getValue(prop).toString());
+//                }
+//            }
+//            // Add the NBTTagCompound, if this is a tile entity.
+//            if (includeNBTData)
+//            {
+//                TileEntity tileentity = Minecraft.getMinecraft().world.getTileEntity(mop.getBlockPos());
+//                if (tileentity != null)
+//                {
+//                    NBTTagCompound data = tileentity.getUpdateTag();
+//                    if (data != null)
+//                    {
+//                        // Turn data directly into json and add it to what we're already returning.
+//                        String jsonString = data.toString();
+//                        try
+//                        {
+//                            JsonElement jelement = new JsonParser().parse(jsonString);
+//                            if (jelement != null)
+//                                jsonMop.add("NBTTagCompound", jelement);
+//                        }
+//                        catch (JsonSyntaxException e)
+//                        {
+//                            // Duff NBTTagCompound - ignore it.
+//                        }
+//                    }
+//                }
+//            }
             jsonMop.addProperty("inRange", hitDist <= blockReach);
             jsonMop.addProperty("distance", hitDist);
         }

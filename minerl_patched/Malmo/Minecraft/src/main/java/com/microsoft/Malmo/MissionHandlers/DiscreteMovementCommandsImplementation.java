@@ -386,8 +386,9 @@ public class DiscreteMovementCommandsImplementation extends CommandBase implemen
                 break;
             case ATTACK:
                 {
-                    RayTraceResult mop = Minecraft.getMinecraft().objectMouseOver;
-                    if( mop.typeOfHit == RayTraceResult.Type.BLOCK ) {
+//                    RayTraceResult mop1 = Minecraft.getMinecraft().objectMouseOver;
+                    RayTraceResult mop = getObjectMouseOver(command);
+                    if(mop != null && mop.typeOfHit == RayTraceResult.Type.BLOCK ) {
                         BlockPos hitPos = mop.getBlockPos();
                         EnumFacing face = mop.sideHit;
                         IBlockState iblockstate = player.world.getBlockState(hitPos);
@@ -412,7 +413,7 @@ public class DiscreteMovementCommandsImplementation extends CommandBase implemen
             case JUMPUSE:
                 {
                 	RayTraceResult mop = getObjectMouseOver(command);
-                    if( mop.typeOfHit == RayTraceResult.Type.BLOCK )
+                    if(mop != null && mop.typeOfHit == RayTraceResult.Type.BLOCK )
                     {
                         if( player.inventory.getCurrentItem() != null ) {
                             ItemStack itemStack = player.inventory.getCurrentItem();
@@ -539,19 +540,23 @@ public class DiscreteMovementCommandsImplementation extends CommandBase implemen
     private RayTraceResult getObjectMouseOver(DiscreteMovementCommand command)
     {
         RayTraceResult mop = null;
-        if (command.equals(DiscreteMovementCommand.USE))
-            mop = Minecraft.getMinecraft().objectMouseOver;
+//        mop = Minecraft.getMinecraft().objectMouseOver;
+        int yOffset = -1;
+        if (command.equals(DiscreteMovementCommand.USE) || command.equals(DiscreteMovementCommand.ATTACK))
+            yOffset = 0;
         else if (command.equals(DiscreteMovementCommand.JUMPUSE))
-        {
-            long partialTicks = 0;  //Minecraft.timer.renderPartialTicks
-            Entity viewer = Minecraft.getMinecraft().player;
-            double blockReach = Minecraft.getMinecraft().playerController.getBlockReachDistance();
-            Vec3d eyePos = viewer.getPositionEyes(partialTicks);
-            Vec3d lookVec = viewer.getLook(partialTicks);
-            int yOffset = 1;    // For the jump
-            Vec3d searchVec = eyePos.addVector(lookVec.xCoord * blockReach, yOffset + lookVec.yCoord * blockReach, lookVec.zCoord * blockReach);
-            mop = Minecraft.getMinecraft().world.rayTraceBlocks(eyePos, searchVec, false, false, false);
-        }
+            yOffset = 1;
+        else return null;
+
+        long partialTicks = 0;  //Minecraft.timer.renderPartialTicks
+        Entity viewer = Minecraft.getMinecraft().player;
+//        double blockReach = Minecraft.getMinecraft().playerController.getBlockReachDistance();
+        double blockReach = 7.0;
+        Vec3d eyePos = viewer.getPositionEyes(partialTicks);
+        Vec3d lookVec = viewer.getLook(partialTicks);
+
+        Vec3d searchVec = eyePos.addVector(lookVec.xCoord * blockReach, yOffset + lookVec.yCoord * blockReach, lookVec.zCoord * blockReach);
+        mop = Minecraft.getMinecraft().world.rayTraceBlocks(eyePos, searchVec, false, false, false);
         return mop;
     }
 
