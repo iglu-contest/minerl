@@ -1,5 +1,6 @@
 import os.path
 import sys
+from unicodedata import normalize
 import urllib
 import atexit
 import requests
@@ -222,12 +223,38 @@ class OrderedJobStreamer(threading.Thread):
     def shutdown(self):
         self._should_exit = True
 
+def normalize_args(args, check_empty=False, check_inequal_size=False):
+    args = list(args)
+    # TODO: check why some batches are of inequal size
+    if any(len(a) == 0 for a in args) and check_empty:
+        have = True
+        while have:
+            empty = [len(a) == 0 for a in args]
+            nonzero = empty.index(False)
+            zero = empty.index(True)
+            args[zero] = args[nonzero]
+            have = any([len(a) == 0 for a in args])
+    if len(np.unique([len(a) for a in args])) != 1 and check_inequal_size:
+        lens = [len(a) for a in args]
+        maxl = max(lens)
+        minl = min(lens)
+        while maxl != minl:
+            j = np.argmin(lens)
+            args[j] = np.concatenate([args[j], args[j][-1:]], axis=0)
+            logging.info('increasing batch component')
+            lens = [len(a) for a in args]
+            maxl = max(lens)
+            minl = min(lens)
+    return args
+
 
 def cat(*args):
+    args = normalize_args(args, check_empty=True)
     return np.concatenate(args)
 
 
 def stack(*args):
+    args = normalize_args(args, check_inequal_size=True)
     return np.stack(args)
 
 

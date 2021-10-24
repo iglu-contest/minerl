@@ -79,8 +79,8 @@ class DataPipeline:
         self.processing_pool = multiprocessing.Pool(self.number_of_workers)
 
         self._env_spec = gym.envs.registration.spec(self.environment)._kwargs['env_spec']
-        self._action_space = gym.envs.registration.spec(self.environment)._kwargs['action_space']
-        self._observation_space = gym.envs.registration.spec(self.environment)._kwargs['observation_space']
+        self._action_space = self._env_spec.action_space
+        self._observation_space = self._env_spec.observation_space
 
     @property
     def spec(self) -> minerl_patched.herobraine.env_spec.EnvSpec:
@@ -192,9 +192,26 @@ class DataPipeline:
                 pending -= 1
                 nexts = cycle(islice(nexts, pending))
 
+    @classmethod
+    def read_files(cls, file_dir):
+        video_path = str(os.path.join(file_dir, 'recording.mp4'))
+        numpy_path = str(os.path.join(file_dir, 'rendered.npz'))
+        meta_path = str(os.path.join(file_dir, 'metadata.json'))
+        cap = cv2.VideoCapture(str(video_path))
+        state = np.load(numpy_path, allow_pickle=True)
+        with open(meta_path) as file:
+            meta = json.load(file)
+            if 'stream_name' not in meta:
+                meta['stream_name'] = file_dir
+        return cap, state, meta
+
+    @classmethod
+    def get_worker(cls):
+        return job
+
     # Todo: Make data pipeline split files per push.
-    @staticmethod
-    def _load_data_pyfunc(file_dir: str, max_seq_len: int, data_queue, env_str="", skip_interval=0,
+    @classmethod
+    def _load_data_pyfunc(cls, file_dir: str, max_seq_len: int, data_queue, env_str="", skip_interval=0,
                           include_metadata=False, include_monitor_data=False):
         """
         Enqueueing mechanism for loading a trajectory from a file onto the data_queue
@@ -206,22 +223,12 @@ class DataPipeline:
         :return:
         """
         logger.debug("Loading from file {}".format(file_dir))
-        video_path = str(os.path.join(file_dir, 'recording.mp4'))
-        numpy_path = str(os.path.join(file_dir, 'rendered.npz'))
-        meta_path = str(os.path.join(file_dir, 'metadata.json'))
 
         try:
             # Start video decompression
-            cap = cv2.VideoCapture(video_path)
-
             # Load numpy file
-            state = np.load(numpy_path, allow_pickle=True)
-
-            # Load metadata file
-            with open(meta_path) as file:
-                meta = json.load(file)
-                if 'stream_name' not in meta:
-                    meta['stream_name'] = file_dir
+            # and metadata file
+            cap, state, meta = cls.read_files(file_dir) 
 
             action_dict = collections.OrderedDict([(key, state[key]) for key in state
                                                    if key.startswith(ACTIONABLE_KEY + HANDLER_TYPE_SEPERATOR)])
@@ -259,13 +266,13 @@ class DataPipeline:
             # We know FOR SURE that the last video frame corresponds to the last state (from Universal.json).
             num_states = len(reward_vec) + 1
 
-            max_frame_num = meta['true_video_frame_count']
+            max_frame_num =  num_states# meta['true_video_frame_count']
 
             frames = []
             frame_num, stop_idx = 0, 0
 
             # Advance video capture past first i-frame to start of experiment
-            cap = cv2.VideoCapture(video_path)
+            # cap = cv2.VideoCapture(str(video_path))
             for _ in range(max_frame_num - num_states):
                 ret, _ = DataPipeline.read_frame(cap)
                 frame_num += 1
@@ -338,7 +345,7 @@ class DataPipeline:
                 current_observation_data = unflatten(current_observation_data)[OBSERVABLE_KEY]
                 action_data = unflatten(action_data)[ACTIONABLE_KEY]
                 next_observation_data = unflatten(next_observation_data)[OBSERVABLE_KEY]
-                monitor_data = unflatten(monitor_data)[MONITOR_KEY]
+                monitor_data = unflatten(monitor_data).get(MONITOR_KEY, OrderedDict())
 
                 batches = [current_observation_data, action_data, reward_data, next_observation_data,
                            np.array(done_data, dtype=np.bool)]
@@ -348,6 +355,8 @@ class DataPipeline:
 
                 if include_metadata:
                     batches += [meta]
+
+                batches = cls.postprocess_batches(batches)
 
                 if data_queue is None:
                     return batches
@@ -372,6 +381,10 @@ class DataPipeline:
             logger.error("Exception caught on file \"{}\" by a worker of the data pipeline.".format(file_dir))
             logger.error(repr(e))
             return None
+
+    @classmethod
+    def postprocess_batches(cls, batches):
+        return batches
 
     def batch_iter(self,
                    batch_size: int,
@@ -418,7 +431,7 @@ class DataPipeline:
             jobs = [(f, -1, None) for f in self._get_all_valid_recordings(self.data_dir)]
             np.random.shuffle(jobs)
             trajectory_loader = minerl_patched.data.util.OrderedJobStreamer(
-                job,
+                self.get_worker(),
                 jobs,
                 trajectory_queue,
                 # executor=concurrent.futures.ThreadPoolExecutor,
@@ -427,16 +440,19 @@ class DataPipeline:
             trajectory_loader.start()
 
             for seg_batch in minibatch_gen(traj_iter(), batch_size=batch_size, nsteps=seq_len):
-                yield [
+                batch = [
                           seg_batch['obs'],
                           seg_batch['act'],
                           seg_batch['reward'],
                           seg_batch['next_obs'],
                           seg_batch['done'],
-                      ] + (
-                              (seg_batch['monitor'] if include_monitor_data else []) +
-                              (seg_batch['meta'] if include_metadata else [])
-                      )
+                ]
+                if include_monitor_data:
+                    batch.append(seg_batch['monitor'])
+                if include_metadata:
+                    batch.append(seg_batch['meta'])
+                yield batch
+                    
 
             trajectory_loader.shutdown()
 
