@@ -38,7 +38,7 @@ if os.name != "nt":
 
 
 def tree_slice(tree, slc):
-    if isinstance(tree, OrderedDict):
+    if isinstance(tree, (OrderedDict, dict)):
         return OrderedDict(
             [(k, tree_slice(v, slc)) for k, v in tree.items()]
         )
@@ -102,7 +102,13 @@ class DataPipeline:
 
         # return result
 
-    def load_data(self, stream_name: str, skip_interval=0, include_metadata=False, include_monitor_data=False):
+    def get_file_dir(self, stream_name):
+        if '/' in stream_name:
+            return stream_name
+        else:
+            return os.path.join(self.data_dir, stream_name)
+
+    def load_data(self, stream_name: str, skip_interval=0, include_metadata=False, include_monitor_data=False, verbose=False):
         """Iterates over an individual trajectory named stream_name.
         
         Args:
@@ -114,44 +120,48 @@ class DataPipeline:
             A tuple of (state, player_action, reward_from_action, next_state, is_next_state_terminal).
             These are tuples are yielded in order of the episode.
         """
-        if '/' in stream_name:
-            file_dir = stream_name
-        else:
-            file_dir = os.path.join(self.data_dir, stream_name)
+        
+        file_dir = self.get_file_dir(stream_name)
 
-        if DataPipeline._is_blacklisted(stream_name):
+        if self._is_blacklisted(stream_name):
             raise RuntimeError("This stream is corrupted (and will be removed in the next version of the data!)")
 
-        seq = DataPipeline._load_data_pyfunc(file_dir, -1, None, self.environment, skip_interval=skip_interval,
-                                             include_metadata=include_metadata)
+        seq = self._load_data_pyfunc(file_dir, -1, None, self.environment, skip_interval=skip_interval,
+                                     include_metadata=include_metadata)
 
         observation_seq, action_seq, reward_seq, next_observation_seq, done_seq = seq[:5]
         remainder = iter(seq[5:])
 
         monitor_seq = next(remainder) if include_monitor_data else None
-        meta = next(remainder) if include_monitor_data else None
+        meta = next(remainder) if include_metadata else None
 
         # make a copty  
         gym_spec = gym.envs.registration.spec(self.environment)
-        target_space = copy.deepcopy(gym_spec._kwargs['observation_space'])
+        target_space = copy.deepcopy(gym_spec._kwargs['env_spec'].observation_space)
 
         x = list(target_space.spaces.items())
         target_space.spaces = collections.OrderedDict(
             sorted(x, key=lambda x:
             x[0] if x[0] is not 'pov' else 'z')
         )
-
+        key = x[0][0]
+        data_len = len(next_observation_seq[key])
         # Now we just need to slice the dict.
-        for idx in tqdm.tqdm(range(len(reward_seq))):
+        for idx in tqdm.tqdm(range(data_len), disable=not verbose):
             # Wrap in dict
             action_dict = tree_slice(action_seq, idx)
             observation_dict = tree_slice(observation_seq, idx)
             next_observation_dict = tree_slice(next_observation_seq, idx)
+            if include_metadata: 
+                # this is IGLU-specific
+                meta_dict = tree_slice(meta, idx)
+            else:
+                meta_dict = meta
 
             yield_list = [observation_dict, action_dict, reward_seq[idx], next_observation_dict, done_seq[idx]]
             yield yield_list + (
                     ([tree_slice(monitor_seq, idx)] if include_monitor_data else []) +
-                    ([meta] if include_metadata else [])
+                    ([meta_dict] if include_metadata else [])
             )
 
     def get_trajectory_names(self):
