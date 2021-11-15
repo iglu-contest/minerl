@@ -129,6 +129,7 @@ class DataPipeline:
         seq = self._load_data_pyfunc(file_dir, -1, None, self.environment, skip_interval=skip_interval,
                                      include_metadata=include_metadata)
 
+
         observation_seq, action_seq, reward_seq, next_observation_seq, done_seq = seq[:5]
         remainder = iter(seq[5:])
 
